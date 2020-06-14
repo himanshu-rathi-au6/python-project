@@ -47,5 +47,4 @@ import time - to get the time the files are deployed in that directory.
 - 1 FOR TO ORGANIZE FILE BY EXTENSION.
 - 2 FOR TO ORGANIZE BY DATE.
 - 3 TO KNOW THE SIZE OF FILES IN YOUR DIRECTORY.
-- 4 TO COUNT FILES IN YOUR DIRECTORY.
 - Enter Path where you want to organize file.
