@@ -1,8 +1,13 @@
 import os
 import shutil
+import sys
 import os.path
 import time
+import json
 from datetime import datetime
+
+with open('file_types.json') as file:
+    file_types = json.load(file)
 
 # this function is used to organize files by extension
 
@@ -21,21 +26,6 @@ def byExtension():
 
     os.chdir(path)
     dir = os.listdir()
-
-    file_types = {
-        "Images": [".png", ".jpeg", ".jpg", ".gif", ".bmp", "svg"],
-        "Text": [".txt", ".wps", ".docx"],
-        "Documents": [".doc", ".ppt", ".csv", ".pptx", ".xml"],
-        "Audio": [".mp3", ".m4a"],
-        "Video": [".mp4", ".avi",  ".wmv", ".m4v", ".mov", ".mpg", ".flv"],
-        "Notes": [".pdf"],
-        "Apps": [".apk", ".exe ", ".jar"],
-        "Code": [".js", ".css", ".html", ".php", ".sass"],
-        "Compressed": [".zip", ".rar"],
-        "Program": [".c", ".cpp", ".ruby", ".rust", ".java"],
-        "Python": [".py"],
-        "Shell": [".sh"]
-    }
 
     for x in dir:
         fileflag = 0
@@ -114,17 +104,17 @@ def bysize():
 # this function is used to count the files
 
 
-print(""" 1 FOR TO ORGANIZE FILE BY EXTENSION
+# print()
 
- 2 FOR TO ORGANIZE BY DATE
+if __name__ == '__main__':
 
- 3 THE SIZE OF FILES IN YOUR DIRECTORY""")
+    # Taking the input from Command line using Command line parsing.
 
-option = int(input("SELECT YOUR OPTION :- "))
+    option = sys.argv[1]
 
-if option == 1:
+if option == 'ext':
     byExtension()
-elif option == 2:
+elif option == 'date':
     bydate()
-elif option == 3:
+elif option == 'size':
     bysize()

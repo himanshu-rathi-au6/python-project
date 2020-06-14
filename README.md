@@ -38,13 +38,11 @@ import time - to get the time the files are deployed in that directory.
 
 1.Store the junk file JunkFileOrganizer.py file in your system anywhere you want.
 
-2.Go to terminal type python3 JunkFileOrganizer.py
+2.Go to terminal type python3 JunkFileOrganizer.py "add perameter" example : ext,date,size.
 
 3.Hit the Enter and run button
 
-4.After doing anyone option from this it it asks user input
-
-- 1 FOR TO ORGANIZE FILE BY EXTENSION.
-- 2 FOR TO ORGANIZE BY DATE.
-- 3 TO KNOW THE SIZE OF FILES IN YOUR DIRECTORY.
+- python3 JunkFileOrganizer.py ext  ------ Organize by Extension wise
+- python3 JunkFileOrganizer.py date ------ Organize by date wise
+- python3 JunkFileOrganizer.py size ------ usser can see size of file
 - Enter Path where you want to organize file.
