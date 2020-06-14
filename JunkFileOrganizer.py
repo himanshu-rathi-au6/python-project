@@ -1,61 +1,97 @@
+import argparse
 import os
 import shutil
-import sys
-import os.path
-import time
-import json
 from datetime import datetime
-
-with open('file_types.json') as file:
-    file_types = json.load(file)
-
-# this function is used to organize files by extension
+import time
+from stat import ST_SIZE
 
 
-def byExtension():
+def main():
+    parameter = argparse.ArgumentParser()
 
-    path = input("Enter Your directory Path :- ")
-    name = os.listdir(path)
-    name.sort(key=lambda x: os.stat(os.path.join(path, x)).st_mtime)
+    # To get the path and arrangement options from the command line
 
-    # List only the files in the folder
+    parameter.add_argument('--path', default='.')
+    parameter.add_argument('-o', default='extension')
 
-    [f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
+    args = parameter.parse_args()
+    organize(args)
 
-    # change the current path
-
-    os.chdir(path)
-    dir = os.listdir()
-
-    for x in dir:
-        fileflag = 0
-        if os.path.isfile(x):
-            if("." in x):
-                Ext_Name = x[x.index("."):]
-                for file_type, extensions in file_types.items():
-                    if Ext_Name in extensions:
-                        fileflag = 1
-                        folderName = file_type
-                        dest_path = path + '/' + folderName
-                        print(dest_path)
-
-                        break
-
-                if (fileflag == 0):
-                    folder_name = "Extra"
-                    dest_path = path + '/' + folder_name
-                    print(dest_path)
-
-            if not os.path.exists(dest_path):
-                os.makedirs(dest_path)
-            shutil.move(path + '/' + x, dest_path + '/' + x)
-
-# this function is used to organize by date
+# secursively list out all the files.
 
 
-def bydate():
+file_Data = []
 
-    path = input("Enter Your directory Path :-")
+
+def get_Data(path):
+    for file in os.scandir(path):
+        if not file.is_dir():
+            fileName = file.name
+            filePath = file.path
+            fileExtension = fileName.split('.')[-1]
+            fileSize = os.stat(filePath)[ST_SIZE]
+            file_Data.append([fileName, filePath, fileExtension, fileSize])
+
+        # If there are any subfolder availabe
+        else:
+            file_Data + [data for data in (get_Data(file.path))]
+
+    return file_Data
+
+# This function arrange the files by their extension
+
+
+def byExtension(path, Data, organizedPath):
+    for data in Data:
+        fileName = data[0]
+        filePath = data[1]
+        extension = data[2]
+
+        if not os.path.exists(organizedPath + extension):
+            os.makedirs(organizedPath + extension)
+
+        shutil.move(filePath, organizedPath + extension + '/' + fileName)
+
+# This function arrange the files by their size
+
+
+def bySize(path, Data, organizedPath):
+    for data in Data:
+        fileName = data[0]
+        filePath = data[1]
+        size = data[3]
+
+        if 0 <= size < 1000:  # bytes
+            if not os.path.exists(organizedPath + 'BYTES'):
+                os.makedirs(organizedPath + 'BYTES')
+
+            shutil.move(filePath, organizedPath + 'BYTES/' + fileName)
+
+        elif 1000 < size < 1000000:  # KiloBytes
+            if not os.path.exists(organizedPath + 'KB'):
+                os.makedirs(organizedPath + 'KB')
+
+            shutil.move(filePath, organizedPath + 'KB/' + fileName)
+
+        elif 1000000 < size < 100000000:  # MegaBytes
+            if not os.path.exists(organizedPath + 'MB'):
+                os.makedirs(organizedPath + 'MB')
+
+            shutil.move(filePath, organizedPath + 'MB/' + fileName)
+
+        # If any file more than 100 MB
+        else:
+            if not os.path.exists(organizedPath + 'more than MB'):
+                os.makedirs(organizedPath + 'more than MB')
+
+            shutil.move(filePath, organizedPath + 'more than MB/' +
+                        fileName)
+
+# This function arrange the files by their last used date
+
+
+def bydate(path, Data, organizedPath):
+
     name = os.listdir(path)
     name.sort(key=lambda x: os.stat(os.path.join(path, x)).st_mtime)
     files = [f for f in os.listdir(path) if os.path.isfile(os.path.join(path,
@@ -80,41 +116,51 @@ def bydate():
             os.makedirs(modified_date)
             shutil.move(os.path.join(path, x), modified_date)
 
-# this function is used to know the size
+
+def count_files(path, Data, organizedPath):
+    # Path where we have to count files and directories
+    path = os.getcwd()
+    n = 0
+    for base, dirs, files in os.walk(path):
+        print('Looking in : ', base)
+        for Files in files:
+            n += 1
+    print('Number of files', n)
+    print(Files, dirs)
+
+# This function check the condition by which the files
 
 
-def bysize():
+def organize(args):
+    path = args.path
+    organizeBy = args.o
 
-    path = input("Enter your directory path:-")
-    size = 0
-    fileSize = {'Bytes': 1, 'Kilobytes': float(1)/1024,
-                'Megabytes': float(1)/(1024*1024),
-                'Gigabytes': float(1)/(1024*1024*1024)}
+    # For exception handling during wrong path input
+    try:
+        Data = get_Data(path)
+    except FileNotFoundError:
+        print('Invalid directory')
+        return
 
-    for (path, dirs, files) in os.walk(path):
+    if not os.path.exists(path + '/organized'):
+        os.makedirs(path + '/organized')
+    organizedPath = path + '/organized/'
 
-        for file in files:
-            filename = os.path.join(path, file)
-            size += os.path.getsize(filename)
+    # Checking the condtion by which the files needs to be arranged and
+    # calling the required function
+    if organizeBy == 'extension':
+        byExtension(path, Data, organizedPath)
+    elif organizeBy == 'size':
+        bySize(path, Data, organizedPath)
+    elif organizeBy == 'date':
+        bydate(path, Data, organizedPath)
+    elif organizeBy == 'count':
+        count_files(path, Data, organizedPath)
 
-    for key in fileSize:
+    print('Done \nOrganized folder path:', path + 'organized')
 
-        print("File Size: " + str(round(fileSize[key]*size, 2)) + " " + key)
+# Driver code
 
-# this function is used to count the files
-
-
-# print()
 
 if __name__ == '__main__':
-
-    # Taking the input from Command line using Command line parsing.
-
-    option = sys.argv[1]
-
-if option == 'ext':
-    byExtension()
-elif option == 'date':
-    bydate()
-elif option == 'size':
-    bysize()
+    main()

@@ -24,7 +24,7 @@ This project uses a number of open source tools, technologies and frameworks to 
 import os - to get all the files from the directories,to create directories.  
 import shutil - to move the files from one directory to another.  
 import ntpath - to get the exact path of the file.  
-import time - to get the time the files are deployed in that directory.  
+import datetime - to get the datetime the files are deployed in that directory.  
 
 # APPROACH USED :
 
@@ -32,17 +32,19 @@ import time - to get the time the files are deployed in that directory.
 
 2. For date/Time based organization - Fetching the date/time for the files stored inside the directories. After finding out the days it is bin stored, the files are then moved to different directories according to the number of days by comparing it using the condition statements.
 
-3. For SIZE based organization - I am checking the file size by using the if and elif conditions in the files directory into their specific folders as per the size of the files. The files which are in Bytes are inside a directory called BYTES and just like that all the different files in the subsequent folders(BYTES,KB,MB,GB)
+3. For SIZE based organization - I have used a variable(size) to store the size of the file and then checking the file size by using the if and elif conditions and then arranging the files into their specific folders by creating new directories as per the size of the files. All the files are first moved into (Organized Directory) then inside this folder all the other directories are created accordingly. files are arranged in the subsequent folders(BYTES,KB,MB,GB)
 
 # How To Run This Project File :
 
 1.Store the junk file JunkFileOrganizer.py file in your system anywhere you want.
 
-2.Go to terminal type python3 JunkFileOrganizer.py "add perameter" example : ext,date,size.
+2.Go to terminal type python3 JunkFileOrganizer.py "add path" "add option"example : extension,date,size.
 
 3.Hit the Enter and run button
-
-- python3 JunkFileOrganizer.py ext  ------ Organize by Extension wise
-- python3 JunkFileOrganizer.py date ------ Organize by date wise
-- python3 JunkFileOrganizer.py size ------ usser can see size of file
-- Enter Path where you want to organize file.
+- By default, the directory will be the current directory path and option will be extension.
+```
+- python3 JunkFileOrganizer.py --path /home -o extension ---- Organize byExtension wise
+- python3 JunkFileOrganizer.py --path /home -o date  ------ Organize by date wise
+- python3 JunkFileOrganizer.py --path /home -o size  ------ Organize by size wise
+- python3 JunkFileOrganizer.py --path /home -o countfile  ------ User can count file in directory
+```
