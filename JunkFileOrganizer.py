@@ -9,15 +9,16 @@ from stat import ST_SIZE
 def main():
     parameter = argparse.ArgumentParser()
 
-    # To get the path and arrangement options from the command line
+    # To get the path and options from the command line.
 
-    parameter.add_argument('--path', default='.')
-    parameter.add_argument('-o', default='extension')
+    parameter.add_argument('--path', default='.', help='path to organize')
+    parameter.add_argument('-o', default='ext', help='Organize by',
+                           choices=['ext', 'size', 'date', 'count'])
 
     args = parameter.parse_args()
     organize(args)
 
-# secursively list out all the files.
+# recursively list out all the files.
 
 
 file_Data = []
@@ -31,8 +32,6 @@ def get_Data(path):
             fileExtension = fileName.split('.')[-1]
             fileSize = os.stat(filePath)[ST_SIZE]
             file_Data.append([fileName, filePath, fileExtension, fileSize])
-
-        # If there are any subfolder availabe
         else:
             file_Data + [data for data in (get_Data(file.path))]
 
@@ -108,18 +107,19 @@ def bydate(path, Data, organizedPath):
         modified_date = str(create_dt.day) + '-' + str(
                         create_dt.month) + '-' + str(create_dt.year)
 
-        if(os.path.isdir(modified_date)):
-            shutil.move(os.path.join(path, x), modified_date)
+        if(os.path.isdir(organizedPath + modified_date)):
+            shutil.move(os.path.join(path, x), organizedPath + modified_date)
 
         else:
 
-            os.makedirs(modified_date)
-            shutil.move(os.path.join(path, x), modified_date)
+            os.makedirs(organizedPath + modified_date)
+            shutil.move(os.path.join(path, x), organizedPath + modified_date)
+
+# Path where we have to count files and directories
 
 
-def count_files(path, Data, organizedPath):
-    # Path where we have to count files and directories
-    path = os.getcwd()
+def countFiles(path, Data, organizedPath):
+    # path = os.getcwd()
     n = 0
     for base, dirs, files in os.walk(path):
         print('Looking in : ', base)
@@ -139,25 +139,24 @@ def organize(args):
     try:
         Data = get_Data(path)
     except FileNotFoundError:
-        print('Invalid directory')
+        print('Invalid path directory')
         return
 
     if not os.path.exists(path + '/organized'):
         os.makedirs(path + '/organized')
     organizedPath = path + '/organized/'
 
-    # Checking the condtion by which the files needs to be arranged and
-    # calling the required function
-    if organizeBy == 'extension':
+    if organizeBy == 'ext':
         byExtension(path, Data, organizedPath)
     elif organizeBy == 'size':
         bySize(path, Data, organizedPath)
     elif organizeBy == 'date':
         bydate(path, Data, organizedPath)
     elif organizeBy == 'count':
-        count_files(path, Data, organizedPath)
+        countFiles(path, Data, organizedPath)
 
-    print('Done \nOrganized folder path:', path + 'organized')
+
+print('Done')
 
 # Driver code
 
