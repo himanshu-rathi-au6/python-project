@@ -13,7 +13,7 @@ This project uses a number of open source tools, technologies and frameworks to 
 
 - [Visual Studio Code](https://code.visualstudio.com) - A code editor redefined and optimized for building and debugging modern web and cloud applications.
 
-- [Flake8](https://pypi.org/project/flake8) - checking
+- [Flake8](https://pypi.org/project/flake8) - static analysis of source code checking for symantec discrepancies
 
 # Built using:
 1. [Python language](https://www.python.org/)
